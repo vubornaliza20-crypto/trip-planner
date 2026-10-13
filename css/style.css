@@ -9,8 +9,12 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 1rem;
   line-height: 1.5;
-  color: #2c3e50;
-  background-color: #fcfbf7;
+  color: #0f172a;
+  background-color: #f8fafc;
+}
+
+h1, h2, h3 {
+  line-height: 1.2;
 }
 
 img {
@@ -19,7 +23,7 @@ img {
 }
 
 .site-header {
-  background-color: #008080;
+  background-color: #0369a1;
   color: #ffffff;
   padding: 24px;
   text-align: center;
@@ -63,7 +67,14 @@ main {
 }
 
 section {
-  margin-bottom: 30px;
+  margin-bottom: 32px;
+}
+
+main section h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+  color: #0369a1;
 }
 
 .cards {
@@ -79,6 +90,10 @@ section {
   overflow: hidden;
 }
 
+.card-image-wrapper {
+  position: relative;
+}
+
 .card img {
   width: 100%;
   height: 340px;
@@ -87,23 +102,45 @@ section {
   display: block;
 }
 
+.status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-planned {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.status-visited {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
 .card-body {
-  padding: 14px;
+  padding: 16px;
 }
 
 .card-body h3 {
   margin-top: 0;
   margin-bottom: 6px;
+  font-size: 1.25rem;
+  color: #0f172a;
 }
 
 .card-body p {
   margin-bottom: 0;
-  color: #666666;
+  color: #64748b;
 }
 
 aside {
-  background-color: #fcf8f2;
-  border: 1px solid #e8dfd1;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 20px 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -113,15 +150,15 @@ aside {
 aside h2 {
   margin-top: 0;
   margin-bottom: 16px;
-  font-size: 1.25rem;
-  color: #1a4d4e;
+  font-size: 1.5rem;
+  color: #0369a1;
 }
 
 .budget-aside h2 {
   margin-top: 0;
   margin-bottom: 16px;
-  font-size: 1.25rem;
-  color: #2c3e50;
+  font-size: 1.5rem;
+  color: #0369a1;
 }
 
 .budget-aside ul {
@@ -145,17 +182,27 @@ aside h2 {
   padding-bottom: 0;
 }
 
-.budget-aside li strong,
 .budget-aside li span {
-  font-weight: 600;
-  color: #008080;
+  font-weight: 500;
+  color: #334155;
+}
+
+/* 
+  Обґрунтування нечіткої вимоги Варіанта 10 ("має надихати на подорожі"):
+  1. Палітра натхненна морем та небом (#0369a1, #f8fafc), що створює відчуття простору й легкості.
+  2. Акцентні числа бюджету (.budget-aside li strong) виділено сонячно-янтарним кольором #b45309 (font-weight: 700).
+  3. Колір привертає увагу до фінансових деталей, відповідає нормі контрасту WCAG AA i не заважає зчитувати супровідні підписи.
+*/
+.budget-aside li strong {
+  font-weight: 700;
+  color: #b45309;
 }
 
 footer {
   text-align: center;
   padding: 16px;
   font-size: 0.875rem;
-  color: #777777;
+  color: #64748b;
   border-top: 1px solid #e0e0e0;
 }
 
