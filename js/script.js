@@ -84,3 +84,85 @@ function renderTrips(tripsArray) {
   }
 }
 renderTrips(trips);
+
+
+const tripForm = document.querySelector('#trip-form');
+const destinationInput = document.querySelector('#destination');
+const daysInput = document.querySelector('#days');
+const budgetInput = document.querySelector('#budget');
+
+tripForm.addEventListener('submit', event => {
+  event.preventDefault();
+
+  const destination = destinationInput.value.trim();
+  const days = Number(daysInput.value);
+  const budget = Number(budgetInput.value);
+
+  const newTrip = {
+    destination,
+    days,
+    budget
+  };
+  trips.push(newTrip);
+
+  renderTrips(trips);
+  tripForm.reset();
+  budgetWarningElement.textContent = '';
+});
+
+
+// Додаткова валідація — перерахунок вартості дня «на льоту» та попередження
+const budgetWarningElement = document.querySelector('#budget-warning');
+const MIN_DAILY_BUDGET = 300; // Розумний мінімальний поріг бюджету на день (грн)
+
+function validateDailyBudget() {
+  const days = Number(daysInput.value);
+  const budget = Number(budgetInput.value);
+
+  // Перевіряємо, чи введені коректні числа, щоб уникнути ділення на 0 або NaN
+  if (days > 0 && budgetInput.value !== '') {
+    const dailyCost = costPerDay({ days, budget });
+
+    if (dailyCost < MIN_DAILY_BUDGET) {
+      budgetWarningElement.textContent = `Вартість дня: ${dailyCost} грн/день. Увага: бюджет на день менший за рекомендований поріг (${MIN_DAILY_BUDGET} грн)!`;
+      budgetWarningElement.style.color = '#dc2626';
+    } else {
+      budgetWarningElement.textContent = `Орієнтовна вартість одного дня: ${dailyCost} грн/день.`;
+      budgetWarningElement.style.color = '#15803d';
+    }
+  } else {
+    budgetWarningElement.textContent = '';
+  }
+}
+
+daysInput.addEventListener('input', validateDailyBudget);
+budgetInput.addEventListener('input', validateDailyBudget);
+
+
+// Делегування події click на контейнер списку карток для показу деталей подорожі
+const detailsSection = document.querySelector('#details');
+
+listContainer.addEventListener('click', event => {
+  // Знаходимо найближчу картку, по якій відбувся клік
+  const clickedCard = event.target.closest('.card');
+  if (!clickedCard) return;
+
+  // Отримуємо назву подорожі із заголовка картки та шукаємо її в масиві trips
+  const destinationTitle = clickedCard.querySelector('h3').textContent;
+  const selectedTrip = trips.find(trip => trip.destination === destinationTitle);
+
+  if (selectedTrip) {
+    const dailyCost = costPerDay(selectedTrip);
+    const category = selectedTrip.budget >= 2000 ? 'Дорога подорож' : 'Бюджетна подорож';
+
+    // Оновлюємо вміст блоку #details
+    detailsSection.innerHTML = `
+      <h2>Деталі обраної подорожі</h2>
+      <p><strong>Напрямок:</strong> ${selectedTrip.destination}</p>
+      <p><strong>Тривалість:</strong> ${selectedTrip.days} днів</p>
+      <p><strong>Загальний бюджет:</strong> ${selectedTrip.budget} грн</p>
+      <p><strong>Середні витрати на день:</strong> ${dailyCost} грн/день (${category})</p>
+    `;
+  }
+});
+
