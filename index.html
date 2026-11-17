@@ -94,6 +94,29 @@
           <h2>Деталі обраної подорожі</h2>
           <p>Маршрут: Ейфелева вежа &rarr; Лувр &rarr; Монмартр</p>
         </section>
+
+        <section id="countries-info">
+          <h2>Інформація про країну</h2>
+          <form id="country-search-form">
+            <div class="form-group">
+              <label for="country-input">Країна (англійською):</label>
+              <input
+                type="text"
+                id="country-input"
+                placeholder="Наприклад: Ukraine, France, Japan"
+                value="Ukraine"
+                required
+              />
+            </div>
+            <button type="submit" id="search-country-btn" class="btn-submit">Знайти країну</button>
+            <button type="button" id="refresh-country-btn" class="btn-submit">Оновити</button>
+          </form>
+
+          <p id="api-loading" style="display: none; font-weight: bold;">Завантаження даних про країну...</p>
+          <p id="api-error" style="color: #dc2626; font-weight: bold;"></p>
+
+          <div id="countries-list" class="cards"></div>
+        </section>
       </main>
       <aside class="budget-aside">
         <h2>Бюджет</h2>

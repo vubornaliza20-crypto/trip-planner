@@ -1,3 +1,11 @@
+/**
+ * Публічний API: CountriesNow API (інформація про країни, столиці та населення)
+ * Посилання: https://countriesnow.space/api/v0.1/countries/capital
+ * Додатковий ендпоінт для населення: https://countriesnow.space/api/v0.1/countries/population
+ */
+const API_URL = 'https://countriesnow.space/api/v0.1/countries/capital';
+const POPULATION_API_URL = 'https://countriesnow.space/api/v0.1/countries/population';
+
 // Масив об'єктів із даними про подорожі ( destination, days, budget )
 const trips = [
   { destination: 'Париж, Франція', days: 5, budget: 1800 },
@@ -166,3 +174,106 @@ listContainer.addEventListener('click', event => {
   }
 });
 
+const countriesListContainer = document.querySelector('#countries-list');
+const countrySearchForm = document.querySelector('#country-search-form');
+const countryInput = document.querySelector('#country-input');
+const searchCountryBtn = document.querySelector('#search-country-btn');
+const apiLoadingElement = document.querySelector('#api-loading');
+const apiErrorElement = document.querySelector('#api-error');
+const refreshCountryBtn = document.querySelector('#refresh-country-btn');
+
+// Увімкнення/вимкнення стану завантаження
+function setLoadingState(isLoading) {
+  apiLoadingElement.style.display = isLoading ? 'block' : 'none';
+  searchCountryBtn.disabled = isLoading;
+  refreshCountryBtn.disabled = isLoading;
+}
+
+// Крок 6: Функція рендеру картки країни в DOM
+function renderCountries(countriesArray) {
+  countriesListContainer.innerHTML = '';
+
+  countriesArray.forEach(country => {
+    const card = document.createElement('article');
+    card.classList.add('card');
+
+    const flagImg = document.createElement('img');
+    flagImg.src = country.flags.png;
+    flagImg.alt = `Прапор: ${country.name.common}`;
+    flagImg.style.maxHeight = '140px';
+    flagImg.style.objectFit = 'cover';
+
+    const title = document.createElement('h3');
+    title.textContent = country.name.common;
+
+    const capitalInfo = document.createElement('p');
+    capitalInfo.textContent = `Столиця: ${country.capital}`;
+
+    const populationInfo = document.createElement('p');
+    populationInfo.textContent = `Населення: ${country.population.toLocaleString('uk-UA')} осіб`;
+
+    card.append(flagImg, title, capitalInfo, populationInfo);
+    countriesListContainer.append(card);
+  });
+}
+
+async function loadData(countryName) {
+  apiErrorElement.textContent = '';
+  setLoadingState(true);
+  try {
+    const response = await fetch(API_URL);
+    const popResponse = await fetch(POPULATION_API_URL);
+
+    if (!response.ok) {
+      throw new Error(`Помилка HTTP: сервер відповів кодом ${response.status}`);
+    }
+
+    const data = await response.json();
+    const popData = await popResponse.json();
+    console.log('Отримані дані з API:', data);
+
+    const foundCountry = data.data.find(
+      item => item.name.toLowerCase() === countryName.trim().toLowerCase()
+    );
+
+    if (!foundCountry) {
+      throw new Error('NOT_FOUND'); // генеруємо помилку, якщо країну не знайдено
+    }
+
+
+    const foundPop = popData.data.find(item => item.code === foundCountry.iso3);
+    const populationValue = foundPop?.populationCounts?.at(-1)?.value || 0;
+
+    const countryObject = {
+      name: { common: foundCountry.name },
+      capital: foundCountry.capital || 'Немає столиці',
+      population: populationValue,
+      flags: { png: `https://flagcdn.com/w320/${foundCountry.iso2.toLowerCase()}.png` }
+    };
+
+      renderCountries([countryObject]);
+
+  } catch (error) {
+    countriesListContainer.innerHTML = '';
+
+    if (error.message === 'NOT_FOUND') {
+      apiErrorElement.textContent = 'Країну не знайдено, перевірте написання';
+    } else {
+      apiErrorElement.textContent = 'Не вдалося завантажити дані. Перевірте з’єднання з інтернетом.';
+    }
+    console.error(error);
+  } finally {
+    setLoadingState(false);
+  }
+}
+
+countrySearchForm.addEventListener('submit', event => {
+  event.preventDefault();
+  loadData(countryInput.value);
+});
+
+// Повторний виклик loadData() при натисканні на кнопку «Оновити»
+refreshCountryBtn.addEventListener('click', () => {
+  loadData(countryInput.value || 'Ukraine');
+});
+loadData('Ukraine');
